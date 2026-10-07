@@ -6,6 +6,7 @@ import Features from '../components/home/Features'
 import CategoriesSection from '../components/home/CategoriesSection'
 import PromoBanners from '../components/home/PromoBanners'
 import SectionTitle from '../components/home/SectionTitle'
+import Newsletter from '../components/home/Newsletter'
 
 const API_BASE = 'https://ecommerce.routemisr.com/api/v1'
 
@@ -54,13 +55,15 @@ export default function Home() {
               <div className="h-12 w-12 rounded-full border-4 border-gray-200 border-t-green-600 animate-spin"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {products.map(function (product) {
                 return <ProductCard key={product._id} product={product} />
               })}
             </div>
           )}
         </section>
+
+        <Newsletter />
       </div>
     </>
   )
