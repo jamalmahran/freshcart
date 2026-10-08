@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import { CartContext } from '../context/CartContext'
+import { WishlistContext } from '../context/WishlistContext'
 import { fetchAll } from '../api/catalog'
 
 // "end" makes Home active only on exactly "/", not on every page.
@@ -162,7 +163,7 @@ function CategoriesDropdown() {
 
 // ---------- Mobile menu helpers ----------
 
-// Wishlist / Cart rows with a colored icon circle and a count badge (0 for now).
+// Wishlist / Cart rows with a colored icon circle and a count badge (counts come from the contexts).
 const mobileShortcuts = [
   {
     name: 'Wishlist',
@@ -170,7 +171,6 @@ const mobileShortcuts = [
     icon: 'fa-regular fa-heart',
     iconClass: 'bg-red-50 text-red-500',
     badgeClass: 'bg-red-500',
-    count: 0,
   },
   {
     name: 'Cart',
@@ -178,7 +178,6 @@ const mobileShortcuts = [
     icon: 'fa-solid fa-cart-shopping',
     iconClass: 'bg-green-50 text-green-600',
     badgeClass: 'bg-green-600',
-    count: 0,
   },
 ]
 
@@ -236,6 +235,8 @@ export default function Navbar() {
   const { token, user, logout } = useContext(AuthContext)
   // numOfCartItems is already 0 when logged out (see CartContext).
   const { numOfCartItems } = useContext(CartContext)
+  // Also 0 when logged out (see WishlistContext).
+  const { count: wishlistCount } = useContext(WishlistContext)
   const navigate = useNavigate()
 
   function handleSignOut() {
@@ -285,8 +286,13 @@ export default function Navbar() {
         </div>
 
         <div className="ms-auto flex items-center gap-5 text-xl text-gray-600">
-          <Link to="/wishlist" className="hover:text-green-600" aria-label="Wishlist">
+          <Link to="/wishlist" className="relative hover:text-green-600" aria-label="Wishlist">
             <i className="fa-regular fa-heart"></i>
+            {wishlistCount > 0 && (
+              <span className="absolute -top-2 -end-2 h-4 min-w-4 px-1 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
+                {wishlistCount}
+              </span>
+            )}
           </Link>
           <Link to="/cart" className="relative hover:text-green-600" aria-label="Cart">
             <i className="fa-solid fa-cart-shopping"></i>
@@ -387,8 +393,8 @@ export default function Navbar() {
 
               <ul className="flex flex-col gap-1 border-t border-gray-100 pt-4">
                 {mobileShortcuts.map(function (item) {
-                  // The cart count comes from the CartContext; the wishlist isn't connected yet.
-                  const count = item.path === '/cart' ? numOfCartItems : item.count
+                  // Live counts from the cart and wishlist contexts.
+                  const count = item.path === '/cart' ? numOfCartItems : wishlistCount
                   return (
                     <li key={item.path}>
                       <NavLink to={item.path} className={getMobileLinkClass} onClick={closeMenu}>

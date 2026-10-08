@@ -4,6 +4,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 import { CartContext } from '../context/CartContext'
+import { WishlistContext } from '../context/WishlistContext'
 import Stars from '../components/Stars'
 import ProductGallery from '../components/product/ProductGallery'
 import ProductTabs from '../components/product/ProductTabs'
@@ -34,7 +35,17 @@ export default function ProductDetails() {
 
   const { token } = useContext(AuthContext)
   const { addToCart, updateCount } = useContext(CartContext)
+  const { isInWishlist, toggleWishlist, togglingId } = useContext(WishlistContext)
   const navigate = useNavigate()
+  // The id in the URL is this product's _id.
+  const inWishlist = isInWishlist(id)
+  const isTogglingWishlist = togglingId === id
+
+  async function handleToggleWishlist() {
+    const done = await toggleWishlist(id)
+    // false = not logged in (the context already showed the toast)
+    if (!done) navigate('/login')
+  }
 
   // Used by both "Add to Cart" and "Buy Now" (which then goes to the cart page).
   async function handleAddToCart(action) {
@@ -324,10 +335,25 @@ export default function ProductDetails() {
           <div className="relative mt-3 flex gap-3">
             <button
               type="button"
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-gray-200 py-2.5 font-medium text-gray-700 hover:border-green-600 hover:text-green-600"
+              onClick={handleToggleWishlist}
+              disabled={isTogglingWishlist}
+              aria-pressed={inWishlist}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 py-2.5 font-medium transition disabled:opacity-70 ${
+                inWishlist
+                  ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
+                  : 'border-gray-200 text-gray-700 hover:border-green-600 hover:text-green-600'
+              }`}
             >
-              <i className="fa-regular fa-heart"></i>
-              Add to Wishlist
+              <i
+                className={
+                  isTogglingWishlist
+                    ? 'fa-solid fa-spinner fa-spin'
+                    : inWishlist
+                      ? 'fa-solid fa-heart text-red-500'
+                      : 'fa-regular fa-heart'
+                }
+              ></i>
+              {inWishlist ? 'In Wishlist' : 'Add to Wishlist'}
             </button>
             <button
               type="button"

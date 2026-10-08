@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import AuthProvider from './context/AuthContext'
 import CartProvider from './context/CartContext'
+import WishlistProvider from './context/WishlistContext'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import GuestRoute from './components/GuestRoute'
@@ -54,9 +55,11 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <RouterProvider router={router} />
-        {/* Toaster renders the little pop-up messages from toast.success() / toast.error() */}
-        <Toaster position="top-right" />
+        <WishlistProvider>
+          <RouterProvider router={router} />
+          {/* Toaster renders the little pop-up messages from toast.success() / toast.error() */}
+          <Toaster position="top-right" />
+        </WishlistProvider>
       </CartProvider>
     </AuthProvider>
   )

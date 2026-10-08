@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 import { CartContext } from '../context/CartContext'
+import { WishlistContext } from '../context/WishlistContext'
 
 // Builds 5 star icons from a rating like 4.2 → 4 full stars + 1 empty.
 // A star is half when the rating reaches at least half of it (e.g. 3.5 → 3 full + 1 half).
@@ -25,6 +26,15 @@ export default function ProductCard({ product, layout = 'grid' }) {
   const { addToCart, addingId } = useContext(CartContext)
   const navigate = useNavigate()
   const isAdding = addingId === product._id
+  const { isInWishlist, toggleWishlist, togglingId } = useContext(WishlistContext)
+  const inWishlist = isInWishlist(product._id)
+  const isToggling = togglingId === product._id
+
+  async function handleToggleWishlist() {
+    const done = await toggleWishlist(product._id)
+    // false = not logged in (the context already showed the toast)
+    if (!done) navigate('/login')
+  }
 
   async function handleAddToCart() {
     if (!token) {
@@ -58,8 +68,23 @@ export default function ProductCard({ product, layout = 'grid' }) {
   // so clicking them never opens the product page.
   const iconButtons = (
     <div className="absolute top-3 end-3 z-10 flex flex-col gap-2">
-      <button type="button" className={iconButtonClass} aria-label="Add to wishlist">
-        <i className="fa-regular fa-heart"></i>
+      <button
+        type="button"
+        onClick={handleToggleWishlist}
+        disabled={isToggling}
+        aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+        aria-pressed={inWishlist}
+        className={iconButtonClass}
+      >
+        <i
+          className={
+            isToggling
+              ? 'fa-solid fa-spinner fa-spin'
+              : inWishlist
+                ? 'fa-solid fa-heart text-red-500'
+                : 'fa-regular fa-heart'
+          }
+        ></i>
       </button>
       <button type="button" className={iconButtonClass} aria-label="Compare">
         <i className="fa-solid fa-arrows-rotate"></i>
