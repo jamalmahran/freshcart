@@ -18,6 +18,7 @@ import Checkout from './pages/Checkout'
 import AllOrders from './pages/AllOrders'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
 import NotFound from './pages/NotFound'
 
 const router = createBrowserRouter([
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
       // Logged-out users only
       { path: 'login', element: <GuestRoute><Login /></GuestRoute> },
       { path: 'register', element: <GuestRoute><Register /></GuestRoute> },
+      { path: 'forgot-password', element: <GuestRoute><ForgotPassword /></GuestRoute> },
       // "*" matches any URL that didn't match the routes above
       { path: '*', element: <NotFound /> },
     ],

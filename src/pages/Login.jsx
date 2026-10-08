@@ -161,9 +161,9 @@ export default function Login() {
                 <label htmlFor="password" className="text-sm font-medium text-gray-800">
                   Password
                 </label>
-                <a href="#" className="text-sm text-green-600 hover:underline">
+                <Link to="/forgot-password" className="text-sm text-green-600 hover:underline">
                   Forgot Password?
-                </a>
+                </Link>
               </div>
               <div className="relative">
                 <i className="fa-solid fa-lock absolute start-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
