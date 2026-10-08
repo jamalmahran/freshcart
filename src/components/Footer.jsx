@@ -31,7 +31,8 @@ const columns = [
     title: 'Account',
     links: [
       { name: 'My Account', to: '#' },
-      { name: 'Order History', to: '#' },
+      // Protected route: logged-out users get sent to /login automatically.
+      { name: 'Order History', to: '/allorders' },
       { name: 'Wishlist', to: '/wishlist' },
       { name: 'Shopping Cart', to: '/cart' },
       { name: 'Sign In', to: '/login' },

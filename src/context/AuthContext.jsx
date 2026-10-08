@@ -1,4 +1,5 @@
 import { createContext, useState } from 'react'
+import { jwtDecode } from 'jwt-decode'
 
 // Context lets components share data without passing props through every level.
 // createContext() makes the "channel"; the Provider below puts values into it;
@@ -6,6 +7,18 @@ import { createContext, useState } from 'react'
 // (This file exports a non-component too, which only affects hot reload of this one file.)
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext(null)
+
+// A JWT (JSON Web Token) is 3 base64 parts: header.payload.signature.
+// jwtDecode reads the middle part (the payload), here { id, name, role }.
+// It does NOT verify the signature; that's the server's job. We only need the id.
+function getUserId(token) {
+  if (!token) return null
+  try {
+    return jwtDecode(token).id || null
+  } catch {
+    return null
+  }
+}
 
 function readStoredUser() {
   try {
@@ -22,6 +35,7 @@ export default function AuthProvider({ children }) {
     return localStorage.getItem('token')
   })
   const [user, setUser] = useState(readStoredUser)
+  const userId = getUserId(token)
 
   function login(newToken, newUser) {
     localStorage.setItem('token', newToken)
@@ -38,7 +52,7 @@ export default function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+    <AuthContext.Provider value={{ token, user, userId, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

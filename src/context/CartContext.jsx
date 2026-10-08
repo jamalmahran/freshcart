@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { AuthContext } from './AuthContext'
 
@@ -71,17 +71,27 @@ export default function CartProvider({ children }) {
   const isCurrent = Boolean(token) && cartState.owner === token
   const loading = Boolean(token) && cartState.owner !== token
 
-  async function getCart() {
-    try {
-      const body = await fetchCart(token)
-      setCartState(toCartState(token, body))
-    } catch (error) {
-      if (error.response?.status === 404) {
-        setCartState({ ...emptyState, owner: token })
-      } else {
-        throw error
+  // useCallback keeps the same getCart function between renders (until the token
+  // changes), so pages can safely list it in a useEffect dependency array.
+  const getCart = useCallback(
+    async function () {
+      try {
+        const body = await fetchCart(token)
+        setCartState(toCartState(token, body))
+      } catch (error) {
+        if (error.response?.status === 404) {
+          setCartState({ ...emptyState, owner: token })
+        } else {
+          throw error
+        }
       }
-    }
+    },
+    [token]
+  )
+
+  // Empties the cart locally (e.g. after a cash order, the server already cleared it).
+  function resetCart() {
+    setCartState({ ...emptyState, owner: token })
   }
 
   // We update our state from the API's answer (not by editing it ourselves), so the
@@ -126,10 +136,12 @@ export default function CartProvider({ children }) {
   const value = {
     cart: isCurrent ? cartState.cart : null,
     numOfCartItems: isCurrent ? cartState.numOfCartItems : 0,
-    cartId: isCurrent ? cartState.cartId : null,
+    // Some responses may not include cartId at the top level; the cart's own _id is the same id.
+    cartId: isCurrent ? cartState.cartId || cartState.cart?._id || null : null,
     loading,
     addingId,
     getCart,
+    resetCart,
     addToCart,
     updateCount,
     removeItem,

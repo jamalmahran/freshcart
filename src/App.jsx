@@ -12,6 +12,8 @@ import Cart from './pages/Cart'
 import Categories from './pages/Categories'
 import Brands from './pages/Brands'
 import Wishlist from './pages/Wishlist'
+import Checkout from './pages/Checkout'
+import AllOrders from './pages/AllOrders'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import NotFound from './pages/NotFound'
@@ -33,6 +35,8 @@ const router = createBrowserRouter([
       { path: 'categories', element: <Categories /> },
       { path: 'brands', element: <Brands /> },
       { path: 'wishlist', element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
+      { path: 'checkout', element: <ProtectedRoute><Checkout /></ProtectedRoute> },
+      { path: 'allorders', element: <ProtectedRoute><AllOrders /></ProtectedRoute> },
       // Logged-out users only
       { path: 'login', element: <GuestRoute><Login /></GuestRoute> },
       { path: 'register', element: <GuestRoute><Register /></GuestRoute> },
