@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { useContext, useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { AuthContext } from '../context/AuthContext'
 
 // "end" makes Home active only on exactly "/", not on every page.
 const links = [
@@ -62,7 +63,7 @@ const mobileShortcuts = [
   },
 ]
 
-// Logged-out state for now; later this becomes the user name + Sign Out.
+// Shown in the mobile menu when logged out (logged in shows the name + Sign Out).
 const mobileAccountLinks = [
   { name: 'Login', path: '/login', icon: 'fa-regular fa-user', iconClass: 'bg-gray-100 text-gray-500' },
   { name: 'Register', path: '/register', icon: 'fa-solid fa-user-plus', iconClass: 'bg-green-50 text-green-600' },
@@ -110,6 +111,16 @@ export default function Navbar() {
     setIsOpen(false)
   }
 
+  // Read the shared auth state from the AuthProvider.
+  const { token, user, logout } = useContext(AuthContext)
+  const navigate = useNavigate()
+
+  function handleSignOut() {
+    closeMenu()
+    logout()
+    navigate('/login')
+  }
+
   return (
     <nav className="bg-white sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center gap-6">
@@ -152,9 +163,33 @@ export default function Navbar() {
               0
             </span>
           </Link>
-          <Link to="/login" className="hover:text-green-600" aria-label="Account">
-            <i className="fa-regular fa-user"></i>
-          </Link>
+
+          {/* Account area: name + Sign Out when logged in, Sign In button otherwise.
+              Hidden on phones, where the mobile menu shows it instead. */}
+          {token ? (
+            <div className="hidden md:flex items-center gap-3 text-sm">
+              <span className="text-gray-700">
+                <i className="fa-regular fa-user me-2"></i>
+                {user?.name}
+              </span>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="rounded-full border border-gray-200 px-4 py-2 font-medium text-gray-600 hover:border-red-200 hover:text-red-600"
+              >
+                <i className="fa-solid fa-right-from-bracket me-2"></i>
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden md:inline-flex items-center gap-2 rounded-full bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700"
+            >
+              <i className="fa-regular fa-user"></i>
+              Sign In
+            </Link>
+          )}
 
           <button
             type="button"
@@ -235,20 +270,43 @@ export default function Navbar() {
                 })}
               </ul>
 
-              <ul className="flex flex-col gap-1 border-t border-gray-100 pt-4">
-                {mobileAccountLinks.map(function (item) {
-                  return (
-                    <li key={item.path}>
-                      <NavLink to={item.path} className={getMobileLinkClass} onClick={closeMenu}>
-                        <span className={`h-9 w-9 rounded-full flex items-center justify-center ${item.iconClass}`}>
-                          <i className={item.icon}></i>
-                        </span>
-                        {item.name}
-                      </NavLink>
-                    </li>
-                  )
-                })}
-              </ul>
+              {token ? (
+                <ul className="flex flex-col gap-1 border-t border-gray-100 pt-4">
+                  <li className="flex items-center gap-3 px-4 py-2.5 text-gray-700">
+                    <span className="h-9 w-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center">
+                      <i className="fa-regular fa-user"></i>
+                    </span>
+                    {user?.name}
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-red-600 hover:bg-red-50"
+                    >
+                      <span className="h-9 w-9 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
+                        <i className="fa-solid fa-right-from-bracket"></i>
+                      </span>
+                      Sign Out
+                    </button>
+                  </li>
+                </ul>
+              ) : (
+                <ul className="flex flex-col gap-1 border-t border-gray-100 pt-4">
+                  {mobileAccountLinks.map(function (item) {
+                    return (
+                      <li key={item.path}>
+                        <NavLink to={item.path} className={getMobileLinkClass} onClick={closeMenu}>
+                          <span className={`h-9 w-9 rounded-full flex items-center justify-center ${item.iconClass}`}>
+                            <i className={item.icon}></i>
+                          </span>
+                          {item.name}
+                        </NavLink>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
 
               <a
                 href="#"
