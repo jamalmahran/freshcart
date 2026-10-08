@@ -1,4 +1,8 @@
-import { Link } from 'react-router-dom'
+import { useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { AuthContext } from '../context/AuthContext'
+import { CartContext } from '../context/CartContext'
 
 // Builds 5 star icons from a rating like 4.2 → 4 full stars + 1 empty.
 // A star is half when the rating reaches at least half of it (e.g. 3.5 → 3 full + 1 half).
@@ -16,6 +20,26 @@ const iconButtonClass =
 // Props are the inputs a parent passes to a component, like HTML attributes.
 // <ProductCard product={p} /> gives us { product: p }, which we destructure here.
 export default function ProductCard({ product }) {
+  const { token } = useContext(AuthContext)
+  const { addToCart, addingId } = useContext(CartContext)
+  const navigate = useNavigate()
+  const isAdding = addingId === product._id
+
+  async function handleAddToCart() {
+    if (!token) {
+      // toast shows a small pop-up message (rendered by <Toaster /> in App.jsx).
+      toast.error('Please sign in to add items to your cart')
+      navigate('/login')
+      return
+    }
+    try {
+      await addToCart(product._id)
+      toast.success('Added to cart')
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Could not add to cart')
+    }
+  }
+
   const productUrl = `/products/${product._id}`
   const hasDiscount = Boolean(product.priceAfterDiscount)
   const discountPercent = hasDiscount
@@ -78,13 +102,14 @@ export default function ProductCard({ product }) {
           <span className="font-bold text-slate-800">{product.price} EGP</span>
         )}
 
-        {/* Add to cart: does nothing yet, we'll connect it to the cart later */}
         <button
           type="button"
+          onClick={handleAddToCart}
+          disabled={isAdding}
           aria-label="Add to cart"
-          className="h-10 w-10 shrink-0 rounded-full bg-green-600 text-white flex items-center justify-center hover:bg-green-700"
+          className="h-10 w-10 shrink-0 rounded-full bg-green-600 text-white flex items-center justify-center hover:bg-green-700 disabled:opacity-70"
         >
-          <i className="fa-solid fa-plus"></i>
+          <i className={isAdding ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-plus'}></i>
         </button>
       </div>
     </div>

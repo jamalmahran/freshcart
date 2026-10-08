@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
+import toast from 'react-hot-toast'
+import { AuthContext } from '../context/AuthContext'
+import { CartContext } from '../context/CartContext'
 import Stars from '../components/Stars'
 import ProductGallery from '../components/product/ProductGallery'
 import ProductTabs from '../components/product/ProductTabs'
@@ -26,6 +29,36 @@ export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState('')
   const [count, setCount] = useState(1)
   const [copied, setCopied] = useState(false)
+  // Which cart button is busy: 'cart', 'buy' or null.
+  const [pendingAction, setPendingAction] = useState(null)
+
+  const { token } = useContext(AuthContext)
+  const { addToCart, updateCount } = useContext(CartContext)
+  const navigate = useNavigate()
+
+  // Used by both "Add to Cart" and "Buy Now" (which then goes to the cart page).
+  async function handleAddToCart(action) {
+    if (!token) {
+      toast.error('Please sign in to add items to your cart')
+      navigate('/login')
+      return
+    }
+
+    setPendingAction(action)
+    try {
+      await addToCart(product._id)
+      // POST /cart always adds 1, so set the chosen quantity afterwards.
+      if (count > 1) {
+        await updateCount(product._id, count)
+      }
+      toast.success('Added to cart')
+      if (action === 'buy') navigate('/cart')
+    } catch (cartError) {
+      toast.error(cartError.response?.data?.message || 'Could not add to cart')
+    } finally {
+      setPendingAction(null)
+    }
+  }
 
   // [id] in the dependency array means: run again whenever the id in the URL changes.
   // Clicking a related product keeps us on this same page component (only the URL
@@ -260,20 +293,30 @@ export default function ProductDetails() {
             </span>
           </div>
 
-          {/* Actions (cart + wishlist get connected in the next step) */}
+          {/* Actions (wishlist gets connected later) */}
           <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 rounded-lg bg-green-600 py-3 font-medium text-white shadow-lg shadow-green-600/20 hover:bg-green-700"
+              onClick={function () {
+                handleAddToCart('cart')
+              }}
+              disabled={!inStock || pendingAction !== null}
+              className="flex items-center justify-center gap-2 rounded-lg bg-green-600 py-3 font-medium text-white shadow-lg shadow-green-600/20 hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <i className="fa-solid fa-cart-shopping"></i>
+              <i
+                className={pendingAction === 'cart' ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-cart-shopping'}
+              ></i>
               Add to Cart
             </button>
             <button
               type="button"
-              className="flex items-center justify-center gap-2 rounded-lg bg-slate-900 py-3 font-medium text-white hover:bg-slate-800"
+              onClick={function () {
+                handleAddToCart('buy')
+              }}
+              disabled={!inStock || pendingAction !== null}
+              className="flex items-center justify-center gap-2 rounded-lg bg-slate-900 py-3 font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <i className="fa-solid fa-bolt"></i>
+              <i className={pendingAction === 'buy' ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-bolt'}></i>
               Buy Now
             </button>
           </div>

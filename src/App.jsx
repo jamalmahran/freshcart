@@ -1,5 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import AuthProvider from './context/AuthContext'
+import CartProvider from './context/CartContext'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import GuestRoute from './components/GuestRoute'
@@ -42,9 +44,14 @@ const router = createBrowserRouter([
 
 export default function App() {
   // Everything inside AuthProvider (the whole app) can read the auth context.
+  // CartProvider sits inside it because the cart needs the token.
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <CartProvider>
+        <RouterProvider router={router} />
+        {/* Toaster renders the little pop-up messages from toast.success() / toast.error() */}
+        <Toaster position="top-right" />
+      </CartProvider>
     </AuthProvider>
   )
 }

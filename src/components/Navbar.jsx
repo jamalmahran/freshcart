@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
+import { CartContext } from '../context/CartContext'
 
 // "end" makes Home active only on exactly "/", not on every page.
 const links = [
@@ -113,6 +114,8 @@ export default function Navbar() {
 
   // Read the shared auth state from the AuthProvider.
   const { token, user, logout } = useContext(AuthContext)
+  // numOfCartItems is already 0 when logged out (see CartContext).
+  const { numOfCartItems } = useContext(CartContext)
   const navigate = useNavigate()
 
   function handleSignOut() {
@@ -159,9 +162,11 @@ export default function Navbar() {
           </Link>
           <Link to="/cart" className="relative hover:text-green-600" aria-label="Cart">
             <i className="fa-solid fa-cart-shopping"></i>
-            <span className="absolute -top-2 -end-2 h-4 w-4 rounded-full bg-green-600 text-white text-[10px] flex items-center justify-center">
-              0
-            </span>
+            {numOfCartItems > 0 && (
+              <span className="absolute -top-2 -end-2 h-4 min-w-4 px-1 rounded-full bg-green-600 text-white text-[10px] flex items-center justify-center">
+                {numOfCartItems}
+              </span>
+            )}
           </Link>
 
           {/* Account area: name + Sign Out when logged in, Sign In button otherwise.
@@ -254,6 +259,8 @@ export default function Navbar() {
 
               <ul className="flex flex-col gap-1 border-t border-gray-100 pt-4">
                 {mobileShortcuts.map(function (item) {
+                  // The cart count comes from the CartContext; the wishlist isn't connected yet.
+                  const count = item.path === '/cart' ? numOfCartItems : item.count
                   return (
                     <li key={item.path}>
                       <NavLink to={item.path} className={getMobileLinkClass} onClick={closeMenu}>
@@ -261,9 +268,11 @@ export default function Navbar() {
                           <i className={item.icon}></i>
                         </span>
                         {item.name}
-                        <span className={`ms-auto min-w-6 h-6 px-1.5 rounded-full text-xs font-bold text-white flex items-center justify-center ${item.badgeClass}`}>
-                          {item.count}
-                        </span>
+                        {count > 0 && (
+                          <span className={`ms-auto min-w-6 h-6 px-1.5 rounded-full text-xs font-bold text-white flex items-center justify-center ${item.badgeClass}`}>
+                            {count}
+                          </span>
+                        )}
                       </NavLink>
                     </li>
                   )
