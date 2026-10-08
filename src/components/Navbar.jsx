@@ -19,21 +19,43 @@ function getLinkClass({ isActive }) {
     : 'text-gray-600 hover:text-green-600'
 }
 
-function SearchBar() {
-  // Stop the browser from reloading the page when Enter is pressed (no search logic yet).
-  function handleSubmit(event) {
-    event.preventDefault()
+// Shared logic for both search boxes: keep the typed text in state and,
+// on submit, go to /search?q=<text>. onDone lets the mobile menu close itself.
+function useSearchBox(onDone) {
+  const [text, setText] = useState('')
+  const navigate = useNavigate()
+
+  function handleChange(event) {
+    setText(event.target.value)
   }
 
+  function handleSubmit(event) {
+    // Stop the browser from reloading the page; we navigate inside the app instead.
+    event.preventDefault()
+    const query = text.trim()
+    navigate(query ? `/search?q=${encodeURIComponent(query)}` : '/search')
+    if (onDone) onDone()
+  }
+
+  return { text, handleChange, handleSubmit }
+}
+
+function SearchBar() {
+  const { text, handleChange, handleSubmit } = useSearchBox()
+
   return (
-    <form onSubmit={handleSubmit} className="relative w-full">
+    <form onSubmit={handleSubmit} role="search" className="relative w-full">
       <input
-        type="text"
+        type="search"
+        value={text}
+        onChange={handleChange}
+        aria-label="Search products"
         placeholder="Search for products, brands and more..."
         className="w-full rounded-full border border-gray-300 py-2 ps-4 pe-12 text-sm focus:outline-none focus:border-green-600"
       />
       <button
-        type="button"
+        type="submit"
+        aria-label="Search"
         className="absolute end-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-green-600 text-white hover:bg-green-700"
       >
         <i className="fa-solid fa-magnifying-glass text-sm"></i>
@@ -77,20 +99,22 @@ function getMobileLinkClass({ isActive }) {
     : `${base} text-gray-700 hover:bg-gray-50`
 }
 
-function MobileSearchBar() {
-  function handleSubmit(event) {
-    event.preventDefault()
-  }
+function MobileSearchBar({ onDone }) {
+  const { text, handleChange, handleSubmit } = useSearchBox(onDone)
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
+    <form onSubmit={handleSubmit} role="search" className="relative">
       <input
-        type="text"
+        type="search"
+        value={text}
+        onChange={handleChange}
+        aria-label="Search products"
         placeholder="Search products..."
         className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 ps-4 pe-12 text-sm focus:outline-none focus:border-green-600"
       />
       <button
-        type="button"
+        type="submit"
+        aria-label="Search"
         className="absolute end-1.5 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg bg-green-600 text-white hover:bg-green-700"
       >
         <i className="fa-solid fa-magnifying-glass text-sm"></i>
@@ -236,7 +260,7 @@ export default function Navbar() {
             </div>
 
             <div className="p-4 border-b border-gray-100">
-              <MobileSearchBar />
+              <MobileSearchBar onDone={closeMenu} />
             </div>
 
             <div className="p-4 flex flex-col gap-4">

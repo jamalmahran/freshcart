@@ -8,6 +8,7 @@ import GuestRoute from './components/GuestRoute'
 import Home from './pages/Home'
 import Products from './pages/Products'
 import ProductDetails from './pages/ProductDetails'
+import Search from './pages/Search'
 import Cart from './pages/Cart'
 import Categories from './pages/Categories'
 import Brands from './pages/Brands'
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
       // index: true = the default child, shown at exactly "/"
       { index: true, element: <Home /> },
       { path: 'products', element: <Products /> },
+      { path: 'search', element: <Search /> },
       // ":id" is a URL parameter: it matches any value, e.g. /products/abc123
       { path: 'products/:id', element: <ProductDetails /> },
       // Logged-in users only
