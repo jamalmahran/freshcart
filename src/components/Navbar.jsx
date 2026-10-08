@@ -1,7 +1,8 @@
-import { useContext, useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useContext, useEffect, useState } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import { CartContext } from '../context/CartContext'
+import { fetchAll } from '../api/catalog'
 
 // "end" makes Home active only on exactly "/", not on every page.
 const links = [
@@ -61,6 +62,101 @@ function SearchBar() {
         <i className="fa-solid fa-magnifying-glass text-sm"></i>
       </button>
     </form>
+  )
+}
+
+// The categories shown in the dropdown, in this order (matched by name, not id).
+const MENU_CATEGORY_NAMES = ['Electronics', "Women's Fashion", "Men's Fashion", 'Beauty & Health']
+
+// Desktop "Categories" dropdown: opens on hover (mouse) and on click (keyboard/touch).
+function CategoriesDropdown() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [categories, setCategories] = useState([])
+  const { pathname } = useLocation()
+  const isActive = pathname.startsWith('/categories')
+
+  // Load the categories once, when the navbar first appears.
+  useEffect(function () {
+    let ignore = false
+
+    async function loadCategories() {
+      try {
+        const data = await fetchAll('categories')
+        if (!ignore) setCategories(data)
+      } catch (error) {
+        console.error('Failed to load categories for the menu:', error)
+      }
+    }
+
+    loadCategories()
+    return function () {
+      ignore = true
+    }
+  }, [])
+
+  function open() {
+    setIsOpen(true)
+  }
+
+  function close() {
+    setIsOpen(false)
+  }
+
+  function toggle() {
+    setIsOpen(!isOpen)
+  }
+
+  // Pick the 4 menu categories from the fetched list, keeping the order above.
+  // .filter(Boolean) drops any name that isn't found (e.g. while still loading).
+  const menuCategories = MENU_CATEGORY_NAMES.map(function (name) {
+    return categories.find(function (category) {
+      return category.name === name
+    })
+  }).filter(Boolean)
+
+  return (
+    <div className="relative" onMouseEnter={open} onMouseLeave={close}>
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        className={`flex items-center gap-1.5 ${getLinkClass({ isActive })}`}
+      >
+        Categories
+        <i className={`fa-solid fa-chevron-down text-[10px] transition ${isOpen ? 'rotate-180' : ''}`}></i>
+      </button>
+
+      {isOpen && (
+        // pt-3 is an invisible "bridge" so the mouse can move down without closing the menu.
+        <div className="absolute start-0 top-full z-50 pt-3">
+          <ul className="w-60 rounded-xl border border-gray-100 bg-white py-2 shadow-xl">
+            <li>
+              <Link
+                to="/categories"
+                onClick={close}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700"
+              >
+                All Categories
+              </Link>
+            </li>
+            {menuCategories.map(function (category) {
+              return (
+                <li key={category._id}>
+                  <Link
+                    to={`/products?category=${category._id}`}
+                    onClick={close}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -162,6 +258,14 @@ export default function Navbar() {
 
         <ul className="hidden lg:flex items-center gap-6">
           {links.map(function (link) {
+            // On desktop, "Categories" is a dropdown instead of a plain link.
+            if (link.path === '/categories') {
+              return (
+                <li key={link.path}>
+                  <CategoriesDropdown />
+                </li>
+              )
+            }
             return (
               <li key={link.path}>
                 <NavLink to={link.path} end={link.end} className={getLinkClass}>
