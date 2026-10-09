@@ -307,7 +307,7 @@ export default function Navbar() {
               Hidden on phones, where the mobile menu shows it instead. */}
           {token ? (
             <div className="hidden md:flex items-center gap-3 text-sm">
-              <Link to="/allorders" className="text-gray-700 hover:text-green-600" title="My Orders">
+              <Link to="/profile" className="text-gray-700 hover:text-green-600" title="My Account">
                 <i className="fa-regular fa-user me-2"></i>
                 {user?.name}
               </Link>
@@ -416,7 +416,7 @@ export default function Navbar() {
               {token ? (
                 <ul className="flex flex-col gap-1 border-t border-gray-100 pt-4">
                   <li>
-                    <NavLink to="/allorders" className={getMobileLinkClass} onClick={closeMenu}>
+                    <NavLink to="/profile" className={getMobileLinkClass} onClick={closeMenu}>
                       <span className="h-9 w-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center">
                         <i className="fa-regular fa-user"></i>
                       </span>

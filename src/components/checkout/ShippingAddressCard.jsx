@@ -52,7 +52,7 @@ export default function ShippingAddressCard({ loading, savedAddresses, choice, o
               const isSelected = choice === index
               return (
                 <button
-                  key={`${address.city}-${address.details}-${address.phone}`}
+                  key={address.id}
                   type="button"
                   onClick={function () {
                     onChoose(index)
@@ -69,7 +69,7 @@ export default function ShippingAddressCard({ loading, savedAddresses, choice, o
                     <i className="fa-solid fa-location-dot"></i>
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-semibold text-gray-900">{address.city}</span>
+                    <span className="block font-semibold text-gray-900">{address.name || address.city}</span>
                     <span className="block text-sm text-gray-600">{address.details}</span>
                     <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
                       <span>

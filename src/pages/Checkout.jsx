@@ -6,7 +6,8 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { AuthContext } from '../context/AuthContext'
 import { CartContext } from '../context/CartContext'
-import { createCashOrder, createCheckoutSession, fetchUserOrders } from '../api/orders'
+import { createCashOrder, createCheckoutSession } from '../api/orders'
+import { fetchAddresses } from '../api/account'
 import ShippingAddressCard from '../components/checkout/ShippingAddressCard'
 import PaymentMethodCard from '../components/checkout/PaymentMethodCard'
 import CheckoutSummary from '../components/checkout/CheckoutSummary'
@@ -17,29 +18,20 @@ const addressSchema = z.object({
   phone: z.string().regex(/^01[0125][0-9]{8}$/, 'Please enter a valid Egyptian phone number'),
 })
 
-// Builds a list of unique addresses (same city + details + phone = same address)
-// from the user's previous orders, newest first.
-function getSavedAddresses(orders) {
-  const sorted = [...orders].sort(function (a, b) {
-    return new Date(b.createdAt) - new Date(a.createdAt)
-  })
-  const seen = new Set()
-  const addresses = []
-
-  sorted.forEach(function (order) {
-    const address = order.shippingAddress
-    if (!address?.city || !address?.details || !address?.phone) return
-    const key = `${address.city}|${address.details}|${address.phone}`.toLowerCase()
-    if (seen.has(key)) return
-    seen.add(key)
-    addresses.push({ city: address.city, details: address.details, phone: address.phone })
-  })
-
+// The addresses saved in My Account → My Addresses, in the shape the card needs
+// (name is only shown as the title; the order only gets city, details and phone).
+function toSavedAddresses(addresses) {
   return addresses
+    .filter(function (address) {
+      return address.city && address.details && address.phone
+    })
+    .map(function (address) {
+      return { id: address._id, name: address.name, city: address.city, details: address.details, phone: address.phone }
+    })
 }
 
 export default function Checkout() {
-  const { token, userId } = useContext(AuthContext)
+  const { token } = useContext(AuthContext)
   const { cart, cartId, numOfCartItems, loading: cartLoading, resetCart } = useContext(CartContext)
   const navigate = useNavigate()
 
@@ -61,16 +53,16 @@ export default function Checkout() {
     defaultValues: { city: '', details: '', phone: '' },
   })
 
-  // Load previous orders once to offer their addresses as "Saved Addresses".
+  // Load the user's saved addresses once for the "Saved Addresses" list.
   useEffect(
     function () {
-      if (!userId) return
+      if (!token) return
       let ignore = false
 
       async function loadAddresses() {
         try {
-          const orders = await fetchUserOrders(userId, token)
-          if (!ignore) setSavedAddresses(getSavedAddresses(orders))
+          const addresses = await fetchAddresses(token)
+          if (!ignore) setSavedAddresses(toSavedAddresses(addresses))
         } catch (error) {
           console.error('Failed to load saved addresses:', error)
         } finally {
@@ -83,7 +75,7 @@ export default function Checkout() {
         ignore = true
       }
     },
-    [userId, token]
+    [token]
   )
 
   const choice = addressChoice !== null ? addressChoice : savedAddresses.length > 0 ? 0 : 'manual'
@@ -132,7 +124,8 @@ export default function Checkout() {
         }
       )()
     } else {
-      submitOrder(savedAddresses[choice])
+      const saved = savedAddresses[choice]
+      submitOrder({ details: saved.details, phone: saved.phone, city: saved.city })
     }
   }
 
@@ -187,7 +180,7 @@ export default function Checkout() {
         <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <div className="lg:col-span-2 flex flex-col gap-6">
             <ShippingAddressCard
-              loading={addressesLoading && Boolean(userId)}
+              loading={addressesLoading && Boolean(token)}
               savedAddresses={savedAddresses}
               choice={choice}
               onChoose={setAddressChoice}

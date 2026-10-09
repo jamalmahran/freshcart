@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import AuthProvider from './context/AuthContext'
 import CartProvider from './context/CartContext'
@@ -16,6 +16,9 @@ import Brands from './pages/Brands'
 import Wishlist from './pages/Wishlist'
 import Checkout from './pages/Checkout'
 import AllOrders from './pages/AllOrders'
+import Profile from './pages/Profile'
+import Addresses from './pages/profile/Addresses'
+import Settings from './pages/profile/Settings'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
@@ -41,6 +44,17 @@ const router = createBrowserRouter([
       { path: 'wishlist', element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
       { path: 'checkout', element: <ProtectedRoute><Checkout /></ProtectedRoute> },
       { path: 'allorders', element: <ProtectedRoute><AllOrders /></ProtectedRoute> },
+      // Nested routes: Profile is the layout, its children render in its <Outlet />.
+      {
+        path: 'profile',
+        element: <ProtectedRoute><Profile /></ProtectedRoute>,
+        children: [
+          // /profile alone → go to the addresses tab
+          { index: true, element: <Navigate to="addresses" replace /> },
+          { path: 'addresses', element: <Addresses /> },
+          { path: 'settings', element: <Settings /> },
+        ],
+      },
       // Logged-out users only
       { path: 'login', element: <GuestRoute><Login /></GuestRoute> },
       { path: 'register', element: <GuestRoute><Register /></GuestRoute> },

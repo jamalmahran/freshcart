@@ -11,12 +11,12 @@ export const AuthContext = createContext(null)
 // A JWT (JSON Web Token) is 3 base64 parts: header.payload.signature.
 // jwtDecode reads the middle part (the payload), here { id, name, role }.
 // It does NOT verify the signature; that's the server's job. We only need the id.
-function getUserId(token) {
-  if (!token) return null
+function readTokenPayload(token) {
+  if (!token) return {}
   try {
-    return jwtDecode(token).id || null
+    return jwtDecode(token) || {}
   } catch {
-    return null
+    return {}
   }
 }
 
@@ -35,12 +35,20 @@ export default function AuthProvider({ children }) {
     return localStorage.getItem('token')
   })
   const [user, setUser] = useState(readStoredUser)
-  const userId = getUserId(token)
+  const payload = readTokenPayload(token)
+  const userId = payload.id || null
+  const role = payload.role || null
 
   function login(newToken, newUser) {
     localStorage.setItem('token', newToken)
     localStorage.setItem('user', JSON.stringify(newUser))
     setToken(newToken)
+    setUser(newUser)
+  }
+
+  // Changes the saved user (e.g. a new name) without touching the token.
+  function updateUser(newUser) {
+    localStorage.setItem('user', JSON.stringify(newUser))
     setUser(newUser)
   }
 
@@ -52,7 +60,7 @@ export default function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, userId, login, logout }}>
+    <AuthContext.Provider value={{ token, user, userId, role, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )
