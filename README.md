@@ -2,7 +2,7 @@
 
 A responsive e-commerce web app built with React, where users can browse products, manage a cart and wishlist, and check out with cash or card.
 
-**Live Demo:** [freshcart.example.com](https://example.com) <!-- replace with the Vercel link -->
+**Live Demo:** [freshcart-alpha-two.vercel.app](https://freshcart-alpha-two.vercel.app/)
 
 ## Features
 
@@ -36,7 +36,7 @@ A responsive e-commerce web app built with React, where users can browse product
 Requires [Node.js](https://nodejs.org) (LTS).
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/jamalmahran/freshcart.git
 cd freshcart
 npm install
 npm run dev
