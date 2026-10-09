@@ -7,8 +7,7 @@ const API_BASE = 'https://ecommerce.routemisr.com/api/v1'
 // eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext(null)
 
-// The cart API identifies the user by a header literally named "token"
-// (not "Authorization: Bearer ..."). axios sends whatever we put in `headers`.
+// The API expects a header literally named "token" (not "Authorization: Bearer ...").
 function authHeaders(token) {
   return { headers: { token } }
 }
@@ -71,8 +70,7 @@ export default function CartProvider({ children }) {
   const isCurrent = Boolean(token) && cartState.owner === token
   const loading = Boolean(token) && cartState.owner !== token
 
-  // useCallback keeps the same getCart function between renders (until the token
-  // changes), so pages can safely list it in a useEffect dependency array.
+  // Stable reference so pages can list getCart in a useEffect dependency array.
   const getCart = useCallback(
     async function () {
       try {

@@ -16,14 +16,11 @@ export default function Newsletter() {
   // null = no message yet, otherwise { type: 'success' | 'error', text: '...' }
   const [message, setMessage] = useState(null)
 
-  // Controlled input: the input shows whatever is in `email` (value={email}),
-  // and every keystroke updates that state through onChange.
   function handleEmailChange(event) {
     setEmail(event.target.value)
   }
 
   function handleSubmit(event) {
-    // Stop the browser's default form submit, which would reload the page.
     event.preventDefault()
 
     if (email.includes('@') && email.includes('.')) {
@@ -93,7 +90,6 @@ export default function Newsletter() {
             </button>
           </form>
 
-          {/* Conditional rendering: show the message only after a submit */}
           {message && (
             <p
               className={`mt-2 text-sm font-medium ${

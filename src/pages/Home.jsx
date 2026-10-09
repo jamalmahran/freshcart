@@ -11,15 +11,10 @@ import Newsletter from '../components/home/Newsletter'
 const API_BASE = 'https://ecommerce.routemisr.com/api/v1'
 
 export default function Home() {
-  // useState stores data that, when changed, makes React re-render the component.
-  // It returns [currentValue, setterFunction].
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // useEffect runs code after the component renders (side effects like API calls).
-  // The empty dependency array [] means: run only once, when Home first appears.
   useEffect(function () {
-    // The effect callback itself can't be async, so we define an async function inside it.
     async function getProducts() {
       try {
         const { data } = await axios.get(`${API_BASE}/products`)

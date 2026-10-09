@@ -9,8 +9,6 @@ import loginCart from '../assets/login-cart.png'
 
 const API_BASE = 'https://ecommerce.routemisr.com/api/v1'
 
-// A Zod schema describes what valid form data looks like.
-// zodResolver (below) runs it on submit and turns failures into field errors.
 const loginSchema = z.object({
   email: z.email('Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
@@ -35,15 +33,11 @@ function inputClass(hasError) {
 }
 
 export default function Login() {
-  // useContext reads the values the AuthProvider shares (here we need login()).
   const { login } = useContext(AuthContext)
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [apiError, setApiError] = useState('')
 
-  // register() connects an input to the form (name, value, onChange...).
-  // formState.errors holds the Zod error for each field.
-  // isSubmitting is true while our async onSubmit is running.
   const {
     register,
     handleSubmit,
@@ -57,7 +51,6 @@ export default function Login() {
     setShowPassword(!showPassword)
   }
 
-  // handleSubmit only calls this when the Zod validation passes.
   async function onSubmit(values) {
     setApiError('')
     try {

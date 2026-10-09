@@ -19,8 +19,6 @@ const guarantees = [
 ]
 
 export default function ProductDetails() {
-  // useParams reads the dynamic parts of the URL.
-  // The route is "products/:id", so /products/abc123 gives { id: 'abc123' }.
   const { id } = useParams()
 
   const [product, setProduct] = useState(null)
@@ -71,9 +69,8 @@ export default function ProductDetails() {
     }
   }
 
-  // [id] in the dependency array means: run again whenever the id in the URL changes.
-  // Clicking a related product keeps us on this same page component (only the URL
-  // changes), so without [id] we would keep showing the old product.
+  // [id]: clicking a related product only changes the URL (same component stays
+  // mounted), so the effect must re-run to load the new product.
   useEffect(
     function () {
       // If the id changes again before this request finishes, ignore its late answer.
@@ -134,7 +131,7 @@ export default function ProductDetails() {
   async function handleShare() {
     const url = window.location.href
 
-    // navigator.share opens the phone's native share sheet (not every browser has it).
+    // Native share sheet where available (mostly phones).
     if (navigator.share) {
       try {
         await navigator.share({ title: product.title, url })
@@ -144,8 +141,7 @@ export default function ProductDetails() {
       return
     }
 
-    // Fallback: navigator.clipboard.writeText copies text to the clipboard.
-    // It returns a Promise, so we await it, then show "Link copied!" for 2 seconds.
+    // Fallback: copy the link and show "Link copied!" for 2 seconds.
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
@@ -304,7 +300,7 @@ export default function ProductDetails() {
             </span>
           </div>
 
-          {/* Actions (wishlist gets connected later) */}
+          {/* Actions */}
           <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               type="button"

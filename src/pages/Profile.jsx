@@ -5,8 +5,6 @@ const tabs = [
   { name: 'Settings', path: '/profile/settings', icon: 'fa-gear' },
 ]
 
-// Nested routes: /profile/addresses and /profile/settings are children of /profile.
-// This layout (header + sidebar) stays on screen, and <Outlet /> shows the active tab.
 export default function Profile() {
   return (
     <div className="bg-gray-50 min-h-screen">

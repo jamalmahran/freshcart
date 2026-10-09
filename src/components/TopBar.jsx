@@ -12,7 +12,6 @@ export default function TopBar() {
   }
 
   return (
-    // hidden md:block = hidden on small screens, visible from the md breakpoint up
     <div className="hidden md:block border-b border-gray-200 text-xs text-gray-500">
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-6">

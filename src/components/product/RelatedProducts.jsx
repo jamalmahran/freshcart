@@ -6,12 +6,9 @@ const arrowClass =
   'h-10 w-10 rounded-full border border-gray-200 bg-white text-gray-600 flex items-center justify-center hover:border-green-600 hover:text-green-600'
 
 export default function RelatedProducts({ products }) {
-  // useRef gives us a direct handle to a DOM element (the scrolling row here).
-  // Unlike state, changing a ref doesn't re-render; we only use it to call scrollBy.
   const rowRef = useRef(null)
 
-  // scrollBy moves the row by one "page" (its visible width), left or right.
-  // behavior: 'smooth' animates the scroll instead of jumping.
+  // Scroll by one visible width ("page") left or right.
   function scrollRow(direction) {
     const row = rowRef.current
     row.scrollBy({ left: direction * row.clientWidth, behavior: 'smooth' })

@@ -13,8 +13,6 @@ const links = [
   { name: 'Brands', path: '/brands' },
 ]
 
-// NavLink calls this function with { isActive }, which is true when the
-// link's path matches the current URL, so we can style the active page differently.
 function getLinkClass({ isActive }) {
   return isActive
     ? 'text-green-600 font-semibold'
@@ -32,7 +30,6 @@ function useSearchBox(onDone) {
   }
 
   function handleSubmit(event) {
-    // Stop the browser from reloading the page; we navigate inside the app instead.
     event.preventDefault()
     const query = text.trim()
     navigate(query ? `/search?q=${encodeURIComponent(query)}` : '/search')
@@ -219,10 +216,8 @@ function MobileSearchBar({ onDone }) {
 }
 
 export default function Navbar() {
-  // isOpen remembers whether the mobile menu is open (starts closed).
   const [isOpen, setIsOpen] = useState(false)
 
-  // Toggle: set isOpen to the opposite of its current value.
   function toggleMenu() {
     setIsOpen(!isOpen)
   }
@@ -231,7 +226,6 @@ export default function Navbar() {
     setIsOpen(false)
   }
 
-  // Read the shared auth state from the AuthProvider.
   const { token, user, logout } = useContext(AuthContext)
   // numOfCartItems is already 0 when logged out (see CartContext).
   const { numOfCartItems } = useContext(CartContext)
@@ -341,8 +335,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Conditional rendering with &&: if isOpen is true, React renders the
-          element after &&; if it's false, nothing is rendered. */}
       {isOpen && (
         <div className="lg:hidden">
           {/* Dark overlay behind the drawer; clicking it closes the menu */}

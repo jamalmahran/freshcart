@@ -8,8 +8,7 @@ const API_BASE = 'https://ecommerce.routemisr.com/api/v1'
 const PAGE_SIZE = 40
 
 export default function Products() {
-  // useSearchParams reads/writes the "?category=...&page=2" part of the URL.
-  // Keeping the filters in the URL means a refresh or a shared link shows the same results.
+  // Filters live in the URL so a refresh or a shared link keeps them.
   const [searchParams, setSearchParams] = useSearchParams()
   const category = searchParams.get('category') || ''
   const brand = searchParams.get('brand') || ''

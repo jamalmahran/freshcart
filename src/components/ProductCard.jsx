@@ -18,8 +18,6 @@ function getStarIcons(rating) {
 const iconButtonClass =
   'h-9 w-9 rounded-full bg-white shadow-md text-gray-500 flex items-center justify-center hover:text-green-600'
 
-// Props are the inputs a parent passes to a component, like HTML attributes.
-// <ProductCard product={p} /> gives us { product: p }, which we destructure here.
 // layout: "grid" (default, image on top) or "list" (image on the left).
 export default function ProductCard({ product, layout = 'grid' }) {
   const { token } = useContext(AuthContext)
@@ -38,7 +36,6 @@ export default function ProductCard({ product, layout = 'grid' }) {
 
   async function handleAddToCart() {
     if (!token) {
-      // toast shows a small pop-up message (rendered by <Toaster /> in App.jsx).
       toast.error('Please sign in to add items to your cart')
       navigate('/login')
       return

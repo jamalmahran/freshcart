@@ -1,16 +1,55 @@
-# React + Vite
+# FreshCart
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive e-commerce web app built with React, where users can browse products, manage a cart and wishlist, and check out with cash or card.
 
-Currently, two official plugins are available:
+**Live Demo:** [freshcart.example.com](https://example.com) <!-- replace with the Vercel link -->
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Authentication**: sign up, sign in, sign out, with protected routes for logged-in pages
+- **Forgot password**: 3-step flow (email code → verify → new password)
+- **Products**: listing with category/brand filters and pagination
+- **Search**: text search with category, brand and price filters, sorting, grid/list view and pagination
+- **Product details**: image gallery, ratings and reviews, quantity picker, related products
+- **Cart**: add, update quantity, remove, clear, order summary
+- **Wishlist**: save products with the heart icon, move them to the cart
+- **Checkout**: cash on delivery or online payment with Stripe
+- **Orders**: order history with status and expandable details
+- **Categories & Brands**: browse pages that link to filtered product lists
+- **Profile**: saved addresses (add, edit, delete) and account settings (profile info, change password)
+- Fully responsive (mobile, tablet, desktop)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- [React](https://react.dev) + [Vite](https://vite.dev)
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [React Router](https://reactrouter.com)
+- [Axios](https://axios-http.com)
+- [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev) for form validation
+- Context API for auth, cart and wishlist state
+- [react-hot-toast](https://react-hot-toast.com) for notifications
+- [SweetAlert2](https://sweetalert2.github.io) for confirmation dialogs
+- [Font Awesome](https://fontawesome.com) icons
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Run Locally
+
+Requires [Node.js](https://nodejs.org) (LTS).
+
+```bash
+git clone <your-repo-url>
+cd freshcart
+npm install
+npm run dev
+```
+
+Then open the URL shown in the terminal (usually http://localhost:5173).
+
+Other scripts:
+
+- `npm run build`: production build into `dist/`
+- `npm run preview`: preview the production build
+- `npm run lint`: run ESLint
+
+## API
+
+Data comes from the [Route Academy E-commerce API](https://ecommerce.routemisr.com) (`https://ecommerce.routemisr.com/api/v1`). Thanks to Route Academy for providing it.

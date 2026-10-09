@@ -28,14 +28,10 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
-    // Children render inside Layout's <Outlet />.
-    // Child paths without a leading "/" are relative to the parent ("/").
     children: [
-      // index: true = the default child, shown at exactly "/"
       { index: true, element: <Home /> },
       { path: 'products', element: <Products /> },
       { path: 'search', element: <Search /> },
-      // ":id" is a URL parameter: it matches any value, e.g. /products/abc123
       { path: 'products/:id', element: <ProductDetails /> },
       // Logged-in users only
       { path: 'cart', element: <ProtectedRoute><Cart /></ProtectedRoute> },
@@ -44,7 +40,6 @@ const router = createBrowserRouter([
       { path: 'wishlist', element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
       { path: 'checkout', element: <ProtectedRoute><Checkout /></ProtectedRoute> },
       { path: 'allorders', element: <ProtectedRoute><AllOrders /></ProtectedRoute> },
-      // Nested routes: Profile is the layout, its children render in its <Outlet />.
       {
         path: 'profile',
         element: <ProtectedRoute><Profile /></ProtectedRoute>,
@@ -59,21 +54,18 @@ const router = createBrowserRouter([
       { path: 'login', element: <GuestRoute><Login /></GuestRoute> },
       { path: 'register', element: <GuestRoute><Register /></GuestRoute> },
       { path: 'forgot-password', element: <GuestRoute><ForgotPassword /></GuestRoute> },
-      // "*" matches any URL that didn't match the routes above
       { path: '*', element: <NotFound /> },
     ],
   },
 ])
 
 export default function App() {
-  // Everything inside AuthProvider (the whole app) can read the auth context.
-  // CartProvider sits inside it because the cart needs the token.
+  // Cart and Wishlist providers sit inside AuthProvider because they need the token.
   return (
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
           <RouterProvider router={router} />
-          {/* Toaster renders the little pop-up messages from toast.success() / toast.error() */}
           <Toaster position="top-right" />
         </WishlistProvider>
       </CartProvider>

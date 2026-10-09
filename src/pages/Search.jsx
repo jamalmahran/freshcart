@@ -107,7 +107,7 @@ export default function Search() {
 
   function handleQueryChange(event) {
     const value = event.target.value
-    // replace: true updates the URL without adding a history entry for every keystroke.
+    // replace: no history entry per keystroke.
     setSearchParams(value ? { q: value } : {}, { replace: true })
   }
 
@@ -165,7 +165,6 @@ export default function Search() {
   const min = minPrice === '' ? null : Number(minPrice)
   const max = maxPrice === '' ? null : Number(maxPrice)
 
-  // .filter() returns a NEW array with only the products that pass every check.
   const filtered = allProducts.filter(function (product) {
     if (searchText && !product.title.toLowerCase().includes(searchText)) return false
     if (selectedCategories.length > 0 && !selectedCategories.includes(product.category?._id)) return false
@@ -176,11 +175,9 @@ export default function Search() {
     return true
   })
 
-  // .sort() changes the array it's called on, so we sort a copy ([...filtered])
-  // and never touch the original order ("Relevance" just keeps that order).
+  // Sort a copy: .sort() mutates, and "Relevance" needs the original order.
   const sorted = sort === 'relevance' ? filtered : [...filtered].sort(comparators[sort])
 
-  // .slice(start, end) cuts out just the 12 products of the current page.
   const totalPages = Math.ceil(sorted.length / PAGE_SIZE)
   const visible = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 

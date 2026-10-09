@@ -6,8 +6,7 @@ import { AuthContext } from '../context/AuthContext'
 export default function ProtectedRoute({ children }) {
   const { token } = useContext(AuthContext)
 
-  // <Navigate> redirects as soon as it renders. "replace" swaps the current
-  // history entry, so the Back button doesn't bounce the user to this page again.
+  // replace: so Back doesn't return to the protected page.
   if (!token) {
     return <Navigate to="/login" replace />
   }

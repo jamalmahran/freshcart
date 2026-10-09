@@ -37,8 +37,6 @@ export default function Cart() {
   }
 
   async function handleClearAll() {
-    // Swal.fire opens a confirm dialog and returns a Promise. We await the user's
-    // choice; result.isConfirmed is true only if they clicked the confirm button.
     const result = await Swal.fire({
       title: 'Clear your cart?',
       text: 'All items will be removed from your cart.',

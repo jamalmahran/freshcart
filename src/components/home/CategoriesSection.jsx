@@ -9,7 +9,6 @@ export default function CategoriesSection() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // Runs once when the section first appears (empty dependency array).
   useEffect(function () {
     async function getCategories() {
       try {

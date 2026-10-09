@@ -168,9 +168,7 @@ function CodeStep({ email, onVerified, onChangeEmail }) {
   const [resending, setResending] = useState(false)
   const isCounting = secondsLeft > 0
 
-  // Resend countdown: one interval ticks every second while counting.
-  // The cleanup clears it when the countdown ends or the step is left,
-  // so the timer never keeps running in the background.
+  // Cleanup clears the interval when the countdown ends or the step unmounts.
   useEffect(
     function () {
       if (!isCounting) return
@@ -379,8 +377,7 @@ const features = [
 ]
 
 export default function ForgotPassword() {
-  // Multi-step form: one page, and `step` decides which form is shown.
-  // The email typed in step 1 is kept here so steps 2 and 3 can reuse it.
+  // The email from step 1 is kept here so steps 2 and 3 can reuse it.
   const [step, setStep] = useState(1)
   const [email, setEmail] = useState('')
 

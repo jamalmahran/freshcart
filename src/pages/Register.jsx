@@ -7,9 +7,7 @@ import axios from 'axios'
 
 const API_BASE = 'https://ecommerce.routemisr.com/api/v1'
 
-// Each key describes one field; Zod checks them in order and reports the first failure.
-// .refine() adds a custom check on the whole object: here, password === rePassword.
-// "path" tells Zod which field the error belongs to, so it shows under Confirm Password.
+// path: ['rePassword'] puts the "do not match" error under Confirm Password.
 const registerSchema = z
   .object({
     name: z
@@ -36,8 +34,6 @@ const registerSchema = z
     { message: 'Passwords do not match', path: ['rePassword'] }
   )
 
-// autoComplete tells the browser / password manager what each field is,
-// so it can autofill it (and offer to generate a password for "new-password").
 const fields = [
   { name: 'name', label: 'Name', type: 'text', placeholder: 'Ali', autoComplete: 'name' },
   { name: 'email', label: 'Email', type: 'email', placeholder: 'ali@example.com', autoComplete: 'email' },
@@ -90,8 +86,6 @@ export default function Register() {
   const navigate = useNavigate()
   const [apiError, setApiError] = useState('')
 
-  // register() connects each input to the form, and formState.errors holds the
-  // Zod messages. control is the form's "engine", used by useWatch below.
   const {
     register,
     handleSubmit,
@@ -109,9 +103,7 @@ export default function Register() {
     },
   })
 
-  // useWatch reads a field's current value while the user types (same idea as
-  // watch("password"), but the hook version that React's compiler/linter prefers).
-  // The component re-renders on each keystroke, so the bar updates live.
+  // useWatch instead of watch(): the React Compiler lint rule can't optimize watch().
   const password = useWatch({ control, name: 'password' })
   const strength = getPasswordStrength(password || '')
 

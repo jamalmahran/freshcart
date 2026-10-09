@@ -93,8 +93,7 @@ export default function Checkout() {
         const body = await createCheckoutSession(cartId, shippingAddress, token)
         const sessionUrl = body.session?.url
         if (!sessionUrl) throw new Error('No payment link was returned. Please try again.')
-        // Stripe is a different website, so we leave our app completely with
-        // window.location.href. navigate() only moves between routes inside our app.
+        // Stripe is an external site: navigate() can't leave the app, so do a full redirect.
         window.location.href = sessionUrl
         return
       }
@@ -113,8 +112,7 @@ export default function Checkout() {
 
   function handlePlaceOrder() {
     if (choice === 'manual') {
-      // handleSubmit(onValid, onInvalid) returns a function; we call it right away
-      // because the button lives outside the <form>.
+      // The button is outside the <form>, so call handleSubmit's returned function directly.
       handleSubmit(
         function (values) {
           submitOrder({ details: values.details.trim(), phone: values.phone, city: values.city.trim() })

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-// Importing an image gives us its final URL after Vite builds the project.
 import hero from '../../assets/hero.jpg'
 
 const slides = [
@@ -23,8 +22,7 @@ export default function HeroSlider() {
   const [current, setCurrent] = useState(0)
 
   function nextSlide() {
-    // Passing a function to the setter gives us the latest value (prev),
-    // which is safer than reading `current` inside a timer.
+    // Functional update: called from setInterval, where `current` could be stale.
     setCurrent(function (prev) {
       return (prev + 1) % slides.length
     })
@@ -41,9 +39,7 @@ export default function HeroSlider() {
     function () {
       const timer = setInterval(nextSlide, 5000)
 
-      // Cleanup function: React runs it before the effect runs again and when
-      // the component is removed from the page. clearInterval stops the old
-      // timer, so we never end up with several timers running at once.
+      // Clear the old timer so only one ever runs.
       return function () {
         clearInterval(timer)
       }
@@ -55,8 +51,7 @@ export default function HeroSlider() {
 
   return (
     <section className="relative overflow-hidden h-64 md:h-80 lg:h-[400px]">
-      {/* The track holds all slides side by side; moving it left by
-          100% per index shows one slide at a time. */}
+      {/* Slides sit side by side; shifting by 100% per index shows one at a time */}
       <div
         className="flex h-full transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${current * 100}%)` }}
